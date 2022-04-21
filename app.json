@@ -1,0 +1,24 @@
+{
+  "expo": {
+    "name": "Kalastuspeli",
+    "slug": "KalastusPeli",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/pike.png",
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.juhocompany.kalastus",
+      "buildNumber": "1.0.0"
+    },
+    "android": {
+      "package": "com.juhocompany.kalastus",
+      "versionCode": 1
+    }
+  }
+}
