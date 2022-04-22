@@ -14,15 +14,13 @@ export default function MenuButton (props) {
 const styles = StyleSheet.create({
   button: {
     borderRadius: 20,
-    borderColor: "#1d4769",
-    borderWidth: 1,
     paddingHorizontal: 20,
     paddingVertical: 10,
     margin: 10,  
   },
   buttonText: {
     fontFamily: "monospace",
-    fontSize: 16,
+    fontSize: 18,
     textTransform: "none",
     textAlign: "center",
     color: "white",

@@ -1,6 +1,8 @@
 import React from "react";
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, Animated} from 'react-native';
 import MenuButton from "./MenuButton";
+import Bubble from "./Bubble";
+import {LinearGradient} from 'expo-linear-gradient';
 
 export default function App() {
 
@@ -8,7 +10,9 @@ export default function App() {
   const [fishType, setFishType] = React.useState("");
   const [amount, setAmount] = React.useState(0);
   const [results, setResults] = React.useState([]);
-  const [calculatePrices, setCalculatePrices] = React.useState(false);
+  const [resultText, setResultText] = React.useState("");
+  const [calculatePrices, setCalculatePrices] = React.useState(true);
+  const [animations, setAnimations] = React.useState(true);
 
   const prices = {
     Hauki: 2,
@@ -17,16 +21,34 @@ export default function App() {
     Taimen: 8,
   }
 
-  const HAUKI = [-1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 4, 4, 4, 4, 5, 5, 6, 6, 6, 8, 8, 8, 8, 8, 8, 8, 8, 8, 9, 9, 9, 10, 10, 10, 10, 10, 10, 12, 12, 12, 12, 14, 14, 14, 16, 16, 17, 18];
+  const tekstit = [
+    "Kalaa tuli!",
+    "Onnistunut reissu!",
+    "Kaikkea sitä!",
+    "Tämmöistä tällä kertaa.",
+    "Kala oli syönnillään.",
+    "Kannatti lähteä!",
+    "Putosin järveen!",
+    "Tuliko kalaa?"
+  ];
+
+  const HAUKI =  [-1, -1, -1, 0, 0, 0, 0, 
+                  0, 0, 0, 0, 2, 2, 2, 2, 3, 3, 3, 4, 4, 
+                  4, 4, 5, 5, 5, 5, 6, 6, 
+                  6, 7, 7, 7, 8, 8, 8, 8, 
+                  9, 9, 9, 10, 10, 10, 
+                  10, 10, 12, 12, 12, 12, 
+                  14, 14, 14, 16, 16, 
+                  17, 18];
   
-  const LOHI = [0, 4, 8, 9, 10, 14, 21,
-                0, 4, 8, 9, 10, 14, 22,
-                0, 4, 8, 9, 12, 14, 24,
-                0, 4, 8, 10, 12, 16, -1,
-                0, 6, 8, 10, 12, 16, -1,
-                0, 6, 8, 10, 12, 19, -1,
-                0, 6, 8, 10, 14, 20,
-                0, 8, 8];
+  const LOHI =   [0, 4, 8, 9, 10, 14, 21,
+                  0, 4, 8, 9, 10, 14, 22,
+                  0, 4, 8, 9, 12, 14, 24,
+                  0, 4, 8, 10, 12, 16, -1,
+                  0, 6, 8, 10, 12, 16, -1,
+                  0, 6, 8, 10, 12, 19, -1,
+                  0, 6, 8, 10, 14, 20,
+                  0, 8, 8];
 
   const TAIMEN = [0, 1, 2, 3, 4, 6, 10,
                   0, 1, 2, 3, 4, 6, 10,
@@ -37,14 +59,14 @@ export default function App() {
                   0, 2, 3, 3, 5, 9,
                   0, 2, 3];
 
-  const KUHA = [0, 1, 2, 3, 4, 6, 10,
-                0, 1, 2, 3, 4, 6, 10,
-                0, 1, 3, 3, 4, 7, -1,
-                0, 1, 3, 3, 4, 8, -1,
-                0, 2, 3, 3, 5, 8, -1,
-                0, 2, 3, 3, 5, 9, 
-                0, 2, 3, 3, 5, 9,
-                0, 2, 3];
+  const KUHA =   [0, 1, 2, 3, 4, 6, 10,
+                  0, 1, 2, 3, 4, 6, 10,
+                  0, 1, 3, 3, 4, 7, -1,
+                  0, 1, 3, 3, 4, 8, -1,
+                  0, 2, 3, 3, 5, 8, -1,
+                  0, 2, 3, 3, 5, 9, 
+                  0, 2, 3, 3, 5, 9,
+                  0, 2, 3];
 
 
   function getFish() {
@@ -67,6 +89,7 @@ export default function App() {
     }
     
     setResults(fish);
+    setResultText(tekstit[Math.floor(Math.random() * tekstit.length)]);
     setPhase("results");
   }
 
@@ -83,7 +106,8 @@ export default function App() {
     }
     else if (phase === "results") {
       setPhase("select");
-      newGame();
+      setAmount(0);
+      setResults([]);
     }
   }
 
@@ -112,31 +136,47 @@ export default function App() {
     return weight*price;
   }
 
+
+
   return ( <>
-    {phase === "menu" && <View style={styles.container}>
-      <Text style={styles.header}>Kalastuspeli</Text> 
 
-      <MenuButton title="Pelaa" onPress={() => setPhase("select")}/>
-      <MenuButton title="Asetukset" onPress={() => setPhase("options")}/>
+    {phase === "menu" && <LinearGradient colors={['#4c669f', '#0a173b']} style={styles.container}>
+      <View style={styles.ui}>
+        <Text style={styles.header}>Kalastuspeli</Text> 
 
-    </View> }
-
-
-    {phase === "options" && <View style={styles.container}>
-      <Text style={styles.header}>Asetukset</Text>
-
-      <Text style={styles.text}>Näytä kalojen hinta: </Text>
-      <View style={styles.buttonRow}>
-        <MenuButton title="Kyllä" selected={calculatePrices ? true : false} onPress={() => setCalculatePrices(true)}/>
-        <MenuButton title="Ei" selected={calculatePrices ? false : true} onPress={() => setCalculatePrices(false)}/>
+        <MenuButton title="Pelaa" onPress={() => setPhase("select")}/>
+        <MenuButton title="Asetukset" onPress={() => setPhase("options")}/>
       </View>
-
-      <MenuButton title="Takaisin" onPress={() => setPhase("menu")}/>
-    </View>}
+    </LinearGradient> }
 
 
+    {phase === "options" && <LinearGradient colors={['#4c669f', '#0a173b']} style={styles.container}>
+      <View style={styles.ui}>
+        <Text style={styles.header}>Asetukset</Text>
 
-    {phase === "select" && <View style={styles.container}>
+        <Text style={styles.text}>Näytä kalojen hinta: </Text>
+        <View style={styles.buttonRow}>
+          <MenuButton title="Kyllä" selected={calculatePrices ? true : false} onPress={() => setCalculatePrices(true)}/>
+          <MenuButton title="Ei" selected={calculatePrices ? false : true} onPress={() => setCalculatePrices(false)}/>
+        </View>
+
+        <View style={styles.space}></View>
+
+        <Text style={styles.text}>Näytä animaatio: </Text>
+        <View style={styles.buttonRow}>
+          <MenuButton title="Kyllä" selected={animations ? true : false} onPress={() => setAnimations(true)}/>
+          <MenuButton title="Ei" selected={animations ? false : true} onPress={() => setAnimations(false)}/>
+        </View>
+
+        <View style={styles.space}></View>
+
+        <MenuButton title="Takaisin" onPress={() => setPhase("menu")}/>
+      </View>
+    </LinearGradient>}
+
+
+
+    {phase === "select" && <LinearGradient colors={['#4c669f', '#0a173b']} style={styles.container}>
       <View style={styles.space}></View>
       <Text style={styles.header2}>Valitse kalalaji</Text>
 
@@ -167,13 +207,13 @@ export default function App() {
 
       <MenuButton title="Kalasta" selected={fishType === "" || amount === 0 ? false : true} disabled={fishType === "" || amount === 0 ? true : false} onPress={getFish}/>
       <MenuButton title="Takaisin" selected={false} onPress={goBack}/>
-    </View>}
+    </LinearGradient>}
 
 
 
-    {phase === "results" && <View style={styles.container}>
+    {phase === "results" && <LinearGradient colors={['#4c669f', '#0a173b']} style={styles.container}>
       <View style={styles.space}></View>
-      <Text style={styles.header2}>Kalaa tuli!</Text>
+      <Text style={styles.header2}>{resultText}</Text>
 
       {results.length !== 0 && results.map((result, index) => {
         return(
@@ -192,7 +232,22 @@ export default function App() {
 
       <View style={styles.space}></View>
       <MenuButton title="Takaisin" selected={false} onPress={goBack}/>
-    </View>}
+    </LinearGradient>}
+
+    {animations && <>
+      <Bubble />
+      <Bubble />
+      <Bubble />
+      <Bubble />
+      <Bubble />
+      <Bubble />
+      <Bubble />
+      <Bubble />
+      <Bubble />
+      <Bubble />
+      <Bubble />   
+    </>}
+
     </>
   );
 }
@@ -202,6 +257,11 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#003663',
     alignItems: 'center',
+  },
+  ui: {
+    flex: 1,
+    alignItems: "center",
+    position: "relative",
   },
   buttonRow: {
     display: "flex",
@@ -215,7 +275,6 @@ const styles = StyleSheet.create({
     fontSize: 24, 
     color: "white",
     padding: 100,
-    marginTop: 50,
   },
   header2:{
     fontSize: 24, 
@@ -225,7 +284,7 @@ const styles = StyleSheet.create({
 
   text: {
     fontFamily: "monospace",
-    fontSize: 16,
+    fontSize: 18,
     textTransform: "none",
     textAlign: "center",
     color: "white",
