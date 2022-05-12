@@ -9,16 +9,17 @@ export default function App() {
   const [phase, setPhase] = React.useState("menu");
   const [fishType, setFishType] = React.useState("");
   const [amount, setAmount] = React.useState(0);
+  const [randomFishes, setRandomFishes] = React.useState([]);
   const [results, setResults] = React.useState([]);
   const [resultText, setResultText] = React.useState("");
   const [calculatePrices, setCalculatePrices] = React.useState(true);
   const [animations, setAnimations] = React.useState(true);
 
   const prices = {
-    Hauki: 2,
-    Lohi: 5,
-    Kuha: 5,
-    Taimen: 8,
+    Hauki: 1,
+    Lohi: 2,
+    Kuha: 2,
+    Taimen: 3,
   }
 
   const tekstit = [
@@ -32,70 +33,107 @@ export default function App() {
     "Tuliko kalaa?"
   ];
 
-  const HAUKI =  [-1, -1, -1, 0, 0, 0, 0, 
-                  0, 0, 0, 0, 2, 2, 2, 2, 3, 3, 3, 4, 4, 
-                  4, 4, 5, 5, 5, 5, 6, 6, 
-                  6, 7, 7, 7, 8, 8, 8, 8, 
-                  9, 9, 9, 10, 10, 10, 
-                  10, 10, 12, 12, 12, 12, 
-                  14, 14, 14, 16, 16, 
+  const HAUKI =  [-1, -1, -1, 
+                  0, 0, 0, 0, 0, 0, 0, 0, 
+                  2, 2, 2, 2, 2, 2, 2,
+                  3, 3, 3, 3, 3,
+                  4, 4, 4, 4, 
+                  5, 5, 5, 5, 
+                  6, 6, 6, 
+                  7, 7, 7, 
+                  8, 8, 8, 8, 
+                  9, 9, 9, 
+                  10, 10, 10,
+                  12, 12, 12,  
+                  14, 14, 16,
                   17, 18];
   
-  const LOHI =   [0, 4, 8, 9, 10, 14, 21,
-                  0, 4, 8, 9, 10, 14, 22,
-                  0, 4, 8, 9, 12, 14, 24,
-                  0, 4, 8, 10, 12, 16, -1,
-                  0, 6, 8, 10, 12, 16, -1,
-                  0, 6, 8, 10, 12, 19, -1,
-                  0, 6, 8, 10, 14, 20,
-                  0, 8, 8];
+  const LOHI =   [-1, -1, -1, 
+                  0, 0, 0, 0, 0, 0,
+                  3, 3, 3, 3, 3, 3,
+                  4, 4, 4, 4, 4,
+                  6, 6, 6, 6, 6,
+                  8, 8, 8, 8, 8, 8,
+                  9, 9, 9, 
+                  10, 10, 10, 10, 
+                  12, 12, 12, 
+                  14, 14, 14,
+                  16, 16, 
+                  19, 
+                  20, 21, 22, 24];
 
-  const TAIMEN = [0, 1, 2, 3, 4, 6, 10,
-                  0, 1, 2, 3, 4, 6, 10,
-                  0, 1, 3, 3, 4, 7, -1,
-                  0, 1, 3, 3, 4, 8, -1,
-                  0, 2, 3, 3, 5, 8, -1,
-                  0, 2, 3, 3, 5, 9, 
-                  0, 2, 3, 3, 5, 9,
-                  0, 2, 3];
+  const TAIMEN = [-1, -1, -1, 
+                  0, 0, 0, 0, 0, 0, 0, 0,
+                  1, 1, 1, 1,
+                  2, 2, 2, 2, 2, 2,
+                  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                  4, 4, 4, 4, 
+                  5, 5, 5, 
+                  6, 6, 
+                  7, 
+                  8, 8, 
+                  9, 9,
+                  10, 10];
 
-  const KUHA =   [0, 1, 2, 3, 4, 6, 10,
-                  0, 1, 2, 3, 4, 6, 10,
-                  0, 1, 3, 3, 4, 7, -1,
-                  0, 1, 3, 3, 4, 8, -1,
-                  0, 2, 3, 3, 5, 8, -1,
-                  0, 2, 3, 3, 5, 9, 
-                  0, 2, 3, 3, 5, 9,
-                  0, 2, 3];
+
+
+  const KUHA =   [-1, -1, -1, 
+                  0, 0, 0, 0, 0, 0, 0, 0,
+                  1, 1, 1, 1,
+                  2, 2, 2, 2, 2, 2,
+                  3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
+                  4, 4, 4, 4, 
+                  5, 5, 5, 
+                  6, 6, 
+                  7, 
+                  8, 8, 
+                  9, 9,
+                  10, 10];
 
 
   function getFish() {
-    let type = null;
-    if (fishType === "Lohi")
-      type = LOHI;
-    else if (fishType === "Hauki")
-      type = HAUKI;
-    else if (fishType === "Taimen")
-      type = TAIMEN;
-    else if (fishType === "Kuha")
-      type = KUHA;
+    let fish = null;
 
-    if(type === null)
+    if (fishType === "Lohi")
+      fish = LOHI;
+    else if (fishType === "Hauki")
+      fish = HAUKI;
+    else if (fishType === "Taimen")
+      fish = TAIMEN;
+    else if (fishType === "Kuha")
+      fish = KUHA;
+
+    if(fish === null)
       return;
 
-    let fish = [];
-    for (let i=0; i<amount; i++) {
-      fish[i] = type[Math.floor(Math.random() * type.length)];
+    for (let i=0; i<fish.length; i++) {
+      //Change fish[i] with fish[random()]
+      let a = fish[i];
+      let bi = Math.floor(Math.random() * fish.length);
+      let b = fish[bi];
+
+      fish[bi] = a;
+      fish[i] = b;
     }
     
-    setResults(fish);
+    setRandomFishes(fish);
+    setAmount(1);
+    setResults([fish[0]]);
     setResultText(tekstit[Math.floor(Math.random() * tekstit.length)]);
     setPhase("results");
+  }
+
+  function addFish() {
+    if(amount < randomFishes.length) {
+      setResults([...results, randomFishes[amount]]);
+      setAmount(amount + 1);
+    }
   }
 
   function newGame() {
     setFishType("");
     setAmount(0);
+    setRandomFishes([]);
     setResults([]);
   }
 
@@ -107,6 +145,7 @@ export default function App() {
     else if (phase === "results") {
       setPhase("select");
       setAmount(0);
+      setRandomFishes([]);
       setResults([]);
     }
   }
@@ -189,23 +228,9 @@ export default function App() {
         <MenuButton title="Kuha" selected={(fishType === "Kuha" ? true : false)} onPress={() => setFishType("Kuha")}/>
       </View>
 
-      <Text style={styles.header2}>Kuinka monta kalaa aiot saada?</Text>
-
-      <View style={styles.buttonRow}>
-        <MenuButton title="1" selected={(amount === 1 ? true : false)} onPress={() => setAmount(1)}/>
-        <MenuButton title="2" selected={(amount === 2 ? true : false)} onPress={() => setAmount(2)}/>
-        <MenuButton title="3" selected={(amount === 3 ? true : false)} onPress={() => setAmount(3)}/>
-        <MenuButton title="4" selected={(amount === 4 ? true : false)} onPress={() => setAmount(4)}/>
-      </View>
-      <View style={styles.buttonRow}>
-        <MenuButton title="5" selected={(amount === 5 ? true : false)} onPress={() => setAmount(5)}/>
-        <MenuButton title="6" selected={(amount === 6 ? true : false)} onPress={() => setAmount(6)}/>
-        <MenuButton title="7" selected={(amount === 7 ? true : false)} onPress={() => setAmount(7)}/>
-      </View>
-
       <View style={styles.space}></View>
 
-      <MenuButton title="Kalasta" selected={fishType === "" || amount === 0 ? false : true} disabled={fishType === "" || amount === 0 ? true : false} onPress={getFish}/>
+      <MenuButton title="Kalasta" selected={fishType === "" ? false : true} disabled={fishType === "" ? true : false} onPress={getFish}/>
       <MenuButton title="Takaisin" selected={false} onPress={goBack}/>
     </LinearGradient>}
 
@@ -231,6 +256,12 @@ export default function App() {
       </>}
 
       <View style={styles.space}></View>
+
+      {amount < 7 ? 
+        <MenuButton title="Kalasta" selected={true} onPress={addFish}/>
+        :
+        <Text style={styles.text}>Et voi kalastaa enempää</Text>
+      }
       <MenuButton title="Takaisin" selected={false} onPress={goBack}/>
     </LinearGradient>}
 
